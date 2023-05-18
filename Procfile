@@ -1,1 +1,1 @@
-"web: gunicorn app:chat" > Procfile
+web: gunicorn -b:$PORT chat:app

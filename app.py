@@ -28,3 +28,6 @@ def send_message_handler(msg):
 def message_handler(msg):
     send(messages)
 
+
+if __name__ == "__main__":
+    io.run(app, debug=True)

@@ -4,63 +4,127 @@
     <meta charset="UTF-8">
     <title>duda-chat</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: rgb(255, 140, 0);
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(45deg, rgb(255, 140, 0) -10%, rgb(0, 0, 139) 70%, rgb(255, 140, 0));
+            overflow: hidden;
+        }
+
+        .container {
+
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+            margin-top: 15px;
+            padding: 0;
+        }
+
         .chatbox {
+
+            background: white;
+            margin: 10px auto;
+            border: 1px solid black;
+            height: 360px;
+            width: 400px;
+            display: flex;
+            flex-direction: column-reverse;
+            overflow: auto; /* Adicionado para habilitar a rolagem dentro da caixa */
+        }
+
+        .chatbox span {
+          margin-left: 10px;
+          margin-bottom: 10px;
+          max-width: 360px;
+          word-break: break-word; /* Adicionado para quebrar as palavras longas */
+        }
+
+        .box {
+            border-radius: 30px;
+            background: rgb(123, 104, 238, .4);
+            border: 1px solid black;
+            margin: 50px auto;
+            height: 500px;
+            width: 550px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
-        .chatbox span {
-            margin-bottom: 10px;
+
+        .btns {
+            margin: 0px auto;
+            width: 280px;
+            height: 20px;
+        }
+
+        .btn_nome {
+            width: 80px;
+        }
+
+        .btn_text {
+            width: 120px;
         }
     </style>
 </head>
 <body>
-    <div class="chatbox">
-
+<div class="container">
+    <div class="box">
+        <h1>Duda-Chat</h1>
+        <div class="chatbox"></div>
+        <div class="btns">
+            <form>
+                <input class="btn_nome" type="text" placeholder="nome">
+                <input class="btn_text" type="text" placeholder="mensagem">
+                <button type="submit">enviar</button>
+            </form>
+        </div>
     </div>
-    <div>
-        <form>
-            <input type="text" placeholder="nome">
-            <input type="text" placeholder="mensagem">
-            <button type="submit">enviar</button>
-        </form>
-    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"
+        integrity="sha512-xbQU0+iHqhVt7VIXi6vBJKPh3IQBF5B84sSHdjKiSccyX/1ZI7Vnkt2/8y8uruj63/DVmCxfUNohPNruthTEQA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    window.onload = function () {
+        const socket = io('http://127.0.0.1:5000/')
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js" integrity="sha512-xbQU0+iHqhVt7VIXi6vBJKPh3IQBF5B84sSHdjKiSccyX/1ZI7Vnkt2/8y8uruj63/DVmCxfUNohPNruthTEQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        window.onload = function() {
-         <!--    const socket = io('http://127.0.0.1:5000/')-->
-          const socket = io('https://duda-chat.herokuapp.com');
+        function addToChat(msg) {
+          const span = document.createElement("span");
+          const chat = document.querySelector(".chatbox");
+          span.innerHTML = `<strong>${msg.name}</strong>: ${msg.message}`;
+          chat.prepend(span); // Adiciona a mensagem no início da lista de mensagens
 
-            function addToChat(msg){
-                const span = document.createElement("span");
-                const chat = document.querySelector(".chatbox");
-                span.innerHTML = `<strong>${msg.name}</strong>: ${msg.message}`;
-                chat.append(span);
-            }
-
-            socket.on('connect', () => {
-                socket.send('Usuário conectado ao socket');
-            });
-
-            document.querySelector("form").addEventListener("submit", function(event) {
-                event.preventDefault();
-                const name = event.target[0].value;
-                const message = event.target[1].value;
-                socket.emit('sendMessage', { name, message });
-                event.target[0].value = '';
-                event.target[1].value = '';
-            });
-
-            socket.on('getMessage', (msg) => {
-                addToChat(msg);
-            });
-
-            socket.on('message', (msgs) => {
-                for (const msg of msgs) {
-                    addToChat(msg);
-                }
-            });
+          chat.scrollTop = chat.scrollHeight; // Faz a rolagem para a parte inferior da caixa
         }
-    </script>
+
+
+
+        socket.on('connect', () => {
+            socket.send('Usuário conectado ao socket');
+        });
+
+        document.querySelector("form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const name = event.target[0].value;
+            const message = event.target[1].value;
+            socket.emit('sendMessage', {name, message});
+            event.target[1].value = '';
+        });
+
+        socket.on('getMessage', (msg) => {
+            addToChat(msg);
+        });
+
+        socket.on('message', (msgs) => {
+            for (const msg of msgs) {
+                addToChat(msg);
+            }
+        });
+    }
+</script>
 </body>
 </html>

@@ -90,7 +90,9 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     window.onload = function () {
-        const socket = io('http://127.0.0.1:5000/')
+
+        const socket = io('https://duda-chat.herokuapp.com/');
+
 
         function addToChat(msg) {
           const span = document.createElement("span");

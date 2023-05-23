@@ -1,5 +1,5 @@
-from app import app
+from app import app, io
 
 
 if __name__ == "__main__":
-    app.run()
+    io.run(app)
